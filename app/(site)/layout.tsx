@@ -4,6 +4,8 @@ import "../globals.css";
 import { cn } from "@/lib/utils";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import { Analytics } from "@vercel/analytics/next";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -29,9 +31,10 @@ const prompt = Prompt({
 });
 
 export const metadata: Metadata = {
-  title: "Machines Labs — ห้องปฏิบัติการสำหรับทดลอง สร้าง และเรียนรู้ Electronics, Robotics และ Physical Intelligence",
+  title:
+    "Machines Labs — ห้องปฏิบัติการสำหรับทดลอง สร้าง และเรียนรู้ Electronics, Robotics และ Physical Intelligence",
   description:
-      "Machines Labs คือห้องปฏิบัติการออนไลน์ด้าน Electronics, Robotics และ Physical Intelligence — รวมบทความเชิงลึก โปรเจกต์ลงมือทำจริง และร้านค้าสำหรับเมกเกอร์ เพื่อร่วมสร้างเทคโนโลยีที่ผสาน AI เข้ากับโลกกายภาพ (Physical AI)",
+    "Machines Labs คือห้องปฏิบัติการออนไลน์ด้าน Electronics, Robotics และ Physical Intelligence — รวมบทความเชิงลึก โปรเจกต์ลงมือทำจริง และร้านค้าสำหรับเมกเกอร์ เพื่อร่วมสร้างเทคโนโลยีที่ผสาน AI เข้ากับโลกกายภาพ (Physical AI)",
 };
 
 export default function RootLayout({
@@ -42,12 +45,23 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("dark", "h-full", "antialiased", geistSans.variable, geistMono.variable, tiny5.variable, prompt.variable, "font-sans")}
+      className={cn(
+        "dark",
+        "h-full",
+        "antialiased",
+        geistSans.variable,
+        geistMono.variable,
+        tiny5.variable,
+        prompt.variable,
+        "font-sans",
+      )}
     >
       <body className="min-h-full flex flex-col">
         <Header />
         <main className="flex-1 pt-16">{children}</main>
         <Footer />
+        <Analytics />
+        <GoogleAnalytics gaId="G-BXT9E43LHR" />
       </body>
     </html>
   );
