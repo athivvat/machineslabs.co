@@ -35,6 +35,10 @@ export default buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   db: postgresAdapter({
+    // Keep all Payload tables (collections + payload_* internals) in their own schema.
+    schemaName: 'cms',
+    // Payload migrations live here; Drizzle (auth_/lms_/store_) will use migrations/app.
+    migrationDir: path.resolve(dirname, 'migrations/cms'),
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
