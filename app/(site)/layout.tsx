@@ -29,9 +29,9 @@ const prompt = Prompt({
 });
 
 export const metadata: Metadata = {
-  title: "Machines Labs — The Lab for Electronics, Robotics & Physical Intelligence",
+  title: "Machines Labs — ห้องปฏิบัติการสำหรับทดลอง สร้าง และเรียนรู้ Electronics, Robotics และ Physical Intelligence",
   description:
-    "Machines Labs is an online lab for electronics, robotics, and physical intelligence — in-depth articles, hands-on projects, and a maker store to build the physical future.",
+      "Machines Labs คือห้องปฏิบัติการออนไลน์ด้าน Electronics, Robotics และ Physical Intelligence — รวมบทความเชิงลึก โปรเจกต์ลงมือทำจริง และร้านค้าสำหรับเมกเกอร์ เพื่อร่วมสร้างเทคโนโลยีที่ผสาน AI เข้ากับโลกกายภาพ (Physical AI)",
 };
 
 export default function RootLayout({
