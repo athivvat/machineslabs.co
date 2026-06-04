@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
 import CategoryBadge from "@/components/category-badge";
 import RichTextBody from "@/components/rich-text";
+import ShareButtons from "@/components/share-buttons";
 import type { Category, Media } from "@/payload-types";
 import { getPostBySlug } from "@/lib/posts";
 
@@ -15,9 +17,49 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) return {};
+
+  const description = post.excerpt ?? post.subTitle ?? undefined;
+
+  const h = await headers();
+  const host = h.get("host") ?? "";
+  const proto = h.get("x-forwarded-proto") ?? "https";
+  const base = `${proto}://${host}`;
+  const url = `${base}/articles/${post.slug}`;
+
+  const image = post.featureImage?.image;
+  const media = image && typeof image === "object" ? (image as Media) : null;
+  const ogImages =
+    media?.url != null
+      ? [
+          {
+            url: media.url.startsWith("http") ? media.url : `${base}${media.url}`,
+            width: media.width ?? undefined,
+            height: media.height ?? undefined,
+            alt: media.alt ?? post.title,
+          },
+        ]
+      : undefined;
+
   return {
     title: `${post.title} — Machines Labs`,
-    description: post.excerpt ?? post.subTitle ?? undefined,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      title: post.title,
+      description,
+      url,
+      siteName: "Machines Labs",
+      locale: "th_TH",
+      images: ogImages,
+    },
+    twitter: {
+      card: ogImages ? "summary_large_image" : "summary",
+      title: post.title,
+      description,
+      creator: "@athivvat",
+      images: ogImages?.map((i) => i.url),
+    },
   };
 }
 
@@ -32,6 +74,11 @@ export default async function ArticlePage({ params }: Params) {
   const categories = (post.categories ?? []).filter(
     (c): c is Category => typeof c === "object" && c !== null,
   );
+
+  const h = await headers();
+  const host = h.get("host") ?? "";
+  const proto = h.get("x-forwarded-proto") ?? "https";
+  const shareUrl = `${proto}://${host}/articles/${post.slug}`;
 
   return (
     <article className="mx-auto max-w-3xl px-6 py-20">
@@ -79,6 +126,13 @@ export default async function ArticlePage({ params }: Params) {
           <RichTextBody data={post.body} />
         </div>
       )}
+
+      <div className="mt-12 border-t border-border pt-6">
+        <p className="mb-3 font-mono text-xs uppercase tracking-widest text-muted-foreground">
+          แชร์บทความนี้
+        </p>
+        <ShareButtons url={shareUrl} title={post.title} />
+      </div>
     </article>
   );
 }
