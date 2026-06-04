@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-import { RichText } from "@payloadcms/richtext-lexical/react";
-
 import CategoryBadge from "@/components/category-badge";
+import RichTextBody from "@/components/rich-text";
 import type { Category, Media } from "@/payload-types";
 import { getPostBySlug } from "@/lib/posts";
 
@@ -48,7 +47,7 @@ export default async function ArticlePage({ params }: Params) {
         <p className="mt-4 text-lg text-muted-foreground">{post.subTitle}</p>
       )}
       {post.excerpt && (
-        <p className="mt-6 border-l-2 border-blaze-orange pl-4 text-base leading-relaxed text-muted-foreground">
+        <p className="mt-6 border-l-2 border-blaze-orange pl-4 text-lg leading-relaxed text-muted-foreground">
           {post.excerpt}
         </p>
       )}
@@ -76,8 +75,8 @@ export default async function ArticlePage({ params }: Params) {
       )}
 
       {post.body && (
-        <div className="article-body prose prose-invert mt-10 max-w-none prose-a:text-blaze-orange prose-headings:tracking-tight">
-          <RichText data={post.body} />
+        <div className="article-body mt-10">
+          <RichTextBody data={post.body} />
         </div>
       )}
     </article>
