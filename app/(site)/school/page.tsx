@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { getCourses } from "@/lib/courses";
 import CourseCard from "@/components/course-card";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "คอร์สเรียนทั้งหมด — Machines Labs",
   description: "คอร์สเรียนออนไลน์ด้านฮาร์ดแวร์ หุ่นยนต์ และ IoT โดย Machines Labs",

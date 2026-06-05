@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -7,11 +6,16 @@ import CategoryBadge from "@/components/category-badge";
 import RichTextBody from "@/components/rich-text";
 import ShareButtons from "@/components/share-buttons";
 import type { Category, Media } from "@/payload-types";
-import { getPostBySlug } from "@/lib/posts";
-
-export const dynamic = "force-dynamic";
+import { getPostBySlug, getPosts } from "@/lib/posts";
 
 type Params = { params: Promise<{ slug: string }> };
+
+export async function generateStaticParams() {
+  const posts = await getPosts();
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
@@ -20,10 +24,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
   const description = post.excerpt ?? post.subTitle ?? undefined;
 
-  const h = await headers();
-  const host = h.get("host") ?? "";
-  const proto = h.get("x-forwarded-proto") ?? "https";
-  const base = `${proto}://${host}`;
+  const base = process.env.NEXT_PUBLIC_APP_URL || "https://machineslabs.co";
   const url = `${base}/articles/${post.slug}`;
 
   const image = post.featureImage?.image;
@@ -75,10 +76,8 @@ export default async function ArticlePage({ params }: Params) {
     (c): c is Category => typeof c === "object" && c !== null,
   );
 
-  const h = await headers();
-  const host = h.get("host") ?? "";
-  const proto = h.get("x-forwarded-proto") ?? "https";
-  const shareUrl = `${proto}://${host}/articles/${post.slug}`;
+  const base = process.env.NEXT_PUBLIC_APP_URL || "https://machineslabs.co";
+  const shareUrl = `${base}/articles/${post.slug}`;
 
   return (
     <article className="mx-auto max-w-2xl px-6 py-20">

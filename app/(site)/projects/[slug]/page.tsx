@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -9,15 +8,20 @@ import CategoryBadge from "@/components/category-badge";
 import RichTextBody from "@/components/rich-text";
 import ShareButtons from "@/components/share-buttons";
 import type { Category, Media } from "@/payload-types";
-import { getProjectBySlug } from "@/lib/projects";
+import { getProjectBySlug, getProjects } from "@/lib/projects";
 import { db } from "@/db";
 import { storeProduct } from "@/db/schema/store";
 import { inArray } from "drizzle-orm";
 
-export const dynamic = "force-dynamic";
-
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateStaticParams() {
+  const projects = await getProjects();
+  return projects.map((project) => ({
+    slug: project.slug,
+  }));
 }
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
@@ -27,10 +31,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 
   const description = project.excerpt ?? project.subTitle ?? undefined;
 
-  const h = await headers();
-  const host = h.get("host") ?? "";
-  const proto = h.get("x-forwarded-proto") ?? "https";
-  const base = `${proto}://${host}`;
+  const base = process.env.NEXT_PUBLIC_APP_URL || "https://machineslabs.co";
   const url = `${base}/projects/${project.slug}`;
 
   const image = project.featureImage?.image;
@@ -82,10 +83,8 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
     (c): c is Category => typeof c === "object" && c !== null,
   );
 
-  const h = await headers();
-  const host = h.get("host") ?? "";
-  const proto = h.get("x-forwarded-proto") ?? "https";
-  const shareUrl = `${proto}://${host}/projects/${project.slug}`;
+  const base = process.env.NEXT_PUBLIC_APP_URL || "https://machineslabs.co";
+  const shareUrl = `${base}/projects/${project.slug}`;
 
   // Fetch Parts Used from database
   const partsIds = project.partsUsed as string[] | null;

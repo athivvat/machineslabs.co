@@ -1,4 +1,5 @@
-import type { CollectionConfig, FieldHook } from 'payload'
+import type { CollectionConfig, FieldHook, CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
+import { revalidatePath } from 'next/cache'
 
 const formatSlug = (val: string): string =>
   val
@@ -15,11 +16,38 @@ const ensureSlug: FieldHook = ({ value, data, originalDoc }) => {
   return typeof fallback === 'string' ? formatSlug(fallback) : value
 }
 
+const revalidateProject: CollectionAfterChangeHook = ({ doc }) => {
+  try {
+    revalidatePath('/projects')
+    if (doc?.slug) {
+      revalidatePath(`/projects/${doc.slug}`)
+    }
+  } catch (err) {
+    console.error('Failed to revalidate projects path:', err)
+  }
+  return doc
+}
+
+const revalidateDeleteProject: CollectionAfterDeleteHook = ({ doc }) => {
+  try {
+    revalidatePath('/projects')
+    if (doc?.slug) {
+      revalidatePath(`/projects/${doc.slug}`)
+    }
+  } catch (err) {
+    console.error('Failed to revalidate projects path on delete:', err)
+  }
+}
+
 export const Projects: CollectionConfig = {
   slug: 'projects',
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'subTitle', 'updatedAt'],
+  },
+  hooks: {
+    afterChange: [revalidateProject],
+    afterDelete: [revalidateDeleteProject],
   },
   fields: [
     {

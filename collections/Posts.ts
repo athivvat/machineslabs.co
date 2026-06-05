@@ -1,4 +1,5 @@
-import type { CollectionConfig, FieldHook } from 'payload'
+import type { CollectionConfig, FieldHook, CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
+import { revalidatePath } from 'next/cache'
 
 // URL-friendly slug: lowercase, spaces → hyphens, strip other characters.
 const formatSlug = (val: string): string =>
@@ -17,11 +18,40 @@ const ensureSlug: FieldHook = ({ value, data, originalDoc }) => {
   return typeof fallback === 'string' ? formatSlug(fallback) : value
 }
 
+const revalidatePost: CollectionAfterChangeHook = ({ doc }) => {
+  try {
+    revalidatePath('/')
+    revalidatePath('/articles')
+    if (doc?.slug) {
+      revalidatePath(`/articles/${doc.slug}`)
+    }
+  } catch (err) {
+    console.error('Failed to revalidate posts path:', err)
+  }
+  return doc
+}
+
+const revalidateDeletePost: CollectionAfterDeleteHook = ({ doc }) => {
+  try {
+    revalidatePath('/')
+    revalidatePath('/articles')
+    if (doc?.slug) {
+      revalidatePath(`/articles/${doc.slug}`)
+    }
+  } catch (err) {
+    console.error('Failed to revalidate posts path on delete:', err)
+  }
+}
+
 export const Posts: CollectionConfig = {
   slug: 'posts',
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'subTitle', 'updatedAt'],
+  },
+  hooks: {
+    afterChange: [revalidatePost],
+    afterDelete: [revalidateDeletePost],
   },
   fields: [
     {

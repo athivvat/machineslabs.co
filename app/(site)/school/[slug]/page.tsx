@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCourseBySlug, getCourses } from "@/lib/courses";
@@ -67,14 +68,16 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
       <div className="relative w-full border-b border-white/10 overflow-hidden ">
         {thumbnailUrl && (
           <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={thumbnailUrl}
               alt=""
-              className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+              fill
+              priority
+              sizes="100vw"
+              className="absolute inset-0 object-cover select-none pointer-events-none -z-10"
             />
             {/* Vertical Gradient: Darker top and bottom to blend with header and page content */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/95  via-black/70 to-black/40" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/95  via-black/70 to-black/40 -z-10" />
           </>
         )}
         

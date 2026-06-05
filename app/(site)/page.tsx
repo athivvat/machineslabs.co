@@ -5,8 +5,6 @@ import CourseCard from "@/components/course-card";
 import { getPosts } from "@/lib/posts";
 import { getCourses } from "@/lib/courses";
 
-export const dynamic = "force-dynamic";
-
 export default async function Home() {
   const [posts, courses] = await Promise.all([
     getPosts({ limit: 3 }),

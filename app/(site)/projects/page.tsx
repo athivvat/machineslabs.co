@@ -3,8 +3,6 @@ import type { Metadata } from "next";
 import ProjectCard from "@/components/project-card";
 import { getProjects } from "@/lib/projects";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "โปรเจกต์ — Machines Labs",
   description: "โปรเจกต์ล่าสุดจาก Machines Labs",
