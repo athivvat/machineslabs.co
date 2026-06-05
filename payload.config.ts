@@ -9,6 +9,7 @@ import { buildConfig } from 'payload'
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
 import { Posts } from './collections/Posts'
+import { Projects } from './collections/Projects'
 import { Tags } from './collections/Tags'
 import { Users } from './collections/Users'
 
@@ -26,7 +27,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Posts, Categories, Tags, Media, Users],
+  collections: [Posts, Projects, Categories, Tags, Media, Users],
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [...defaultFeatures, EXPERIMENTAL_TableFeature()],
   }),

@@ -6,14 +6,21 @@
       "idx": 0,
       "version": "7",
       "when": 1780647443531,
-      "tag": "0000_many_carnage",
+      "tag": "0000_create_lms_tables",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
       "when": 1780651941796,
-      "tag": "0001_next_callisto",
+      "tag": "0001_create_auth_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780676020454,
+      "tag": "0002_add_store_product",
       "breakpoints": true
     }
   ]

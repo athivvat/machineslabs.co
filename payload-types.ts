@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     posts: Post;
+    projects: Project;
     categories: Category;
     tags: Tag;
     media: Media;
@@ -80,6 +81,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     posts: PostsSelect<false> | PostsSelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -206,6 +208,59 @@ export interface Tag {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects".
+ */
+export interface Project {
+  id: number;
+  title: string;
+  /**
+   * URL path, e.g. smart-irrigation-system-with-esp32
+   */
+  slug: string;
+  subTitle?: string | null;
+  /**
+   * Short summary shown on cards and lists.
+   */
+  excerpt?: string | null;
+  featureImage?: {
+    image?: (number | null) | Media;
+    caption?: string | null;
+    credits?: string | null;
+  };
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Electronics parts and components from our store used in this project.
+   */
+  partsUsed?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  categories?: (number | Category)[] | null;
+  tags?: (number | Tag)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
@@ -256,6 +311,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'posts';
         value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'projects';
+        value: number | Project;
       } | null)
     | ({
         relationTo: 'categories';
@@ -332,6 +391,29 @@ export interface PostsSelect<T extends boolean = true> {
         credits?: T;
       };
   body?: T;
+  categories?: T;
+  tags?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects_select".
+ */
+export interface ProjectsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  subTitle?: T;
+  excerpt?: T;
+  featureImage?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        credits?: T;
+      };
+  body?: T;
+  partsUsed?: T;
   categories?: T;
   tags?: T;
   updatedAt?: T;

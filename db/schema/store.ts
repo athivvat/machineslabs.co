@@ -1,19 +1,14 @@
-/**
- * Online shop tables — prefix: `store_`
- *
- * Keep *transactional* data here (orders, order items, carts, payments).
- * The product *catalog* is better modeled as Payload collections in the `cms`
- * schema; reference products by id from these tables.
- *
- * Example:
- *
- *   import { pgTable, text, integer, numeric, timestamp } from "drizzle-orm/pg-core";
- *
- *   export const order = pgTable("store_order", {
- *     id: text("id").primaryKey(),
- *     userId: text("user_id").notNull(),       // → auth_user.id
- *     total: numeric("total").notNull(),
- *     createdAt: timestamp("created_at").notNull().defaultNow(),
- *   });
- */
-export {};
+import { pgTable, text, integer, timestamp } from "drizzle-orm/pg-core";
+
+export const storeProduct = pgTable("store_product", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  price: integer("price").notNull(),
+  sku: text("sku"),
+  image: text("image"),
+  description: text("description"),
+  category: text("category"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
