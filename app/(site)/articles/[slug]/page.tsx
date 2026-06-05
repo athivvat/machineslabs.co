@@ -81,7 +81,7 @@ export default async function ArticlePage({ params }: Params) {
   const shareUrl = `${proto}://${host}/articles/${post.slug}`;
 
   return (
-    <article className="mx-auto max-w-3xl px-6 py-20">
+    <article className="mx-auto max-w-2xl px-6 py-20">
       {categories.length > 0 && (
         <div className="mb-4 flex flex-wrap gap-2">
           {categories.map((category) => (
