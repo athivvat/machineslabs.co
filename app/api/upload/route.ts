@@ -56,12 +56,17 @@ export async function POST(request: NextRequest) {
         })
       )
 
-      // Get account ID from S3_ENDPOINT to build the public URL
-      const endpoint = process.env.S3_ENDPOINT || ""
-      const match = endpoint.match(/https:\/\/([^.]+)\.r2\.cloudflarestorage\.com/)
-      const accountId = match ? match[1] : ""
-      
-      const fileUrl = `https://pub-${accountId}.r2.dev/${key}`
+      // Use custom domain / public R2 URL if configured, otherwise fallback to parsing endpoint
+      let fileUrl = ""
+      if (process.env.NEXT_PUBLIC_R2_PUBLIC_URL) {
+        const publicBase = process.env.NEXT_PUBLIC_R2_PUBLIC_URL.replace(/\/$/, "")
+        fileUrl = `${publicBase}/${key}`
+      } else {
+        const endpoint = process.env.S3_ENDPOINT || ""
+        const match = endpoint.match(/https:\/\/([^.]+)\.r2\.cloudflarestorage\.com/)
+        const accountId = match ? match[1] : ""
+        fileUrl = `https://pub-${accountId}.r2.dev/${key}`
+      }
       return NextResponse.json({ url: fileUrl })
     } else {
       // 5. Local Storage (/public/uploads/assets)
