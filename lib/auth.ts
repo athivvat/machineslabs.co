@@ -8,6 +8,8 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    // Set DISABLE_SIGNUP=true in your .env file to disable registrations
+    disableSignUp: process.env.DISABLE_SIGNUP === "true",
   },
   user: {
     modelName: "auth_user",

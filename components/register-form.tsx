@@ -17,10 +17,11 @@ import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
 
-export function LoginForm({
+export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,13 +31,14 @@ export function LoginForm({
     setLoading(true);
 
     try {
-      const res = await authClient.signIn.email({
+      const res = await authClient.signUp.email({
         email,
         password,
+        name,
       });
 
       if (res.error) {
-        toast.error(res.error.message || "Invalid email or password.");
+        toast.error(res.error.message || "Failed to create account.");
       } else {
         window.location.href = "/garage";
       }
@@ -56,14 +58,28 @@ export function LoginForm({
             <span className="font-tiny5 text-3xl font-normal text-blaze-orange">M</span>
           </div>
         </div>
-        <CardTitle className="text-xl font-bold tracking-tight">Login to Machines Labs</CardTitle>
+        <CardTitle className="text-xl font-bold tracking-tight">Create Garage Account</CardTitle>
         <CardDescription className="text-xs text-muted-foreground mt-1">
-          Enter your email below to access the Garage Back Office
+          Register a new administrator account below
         </CardDescription>
       </CardHeader>
       <CardContent className="pb-6">
         <form onSubmit={handleSubmit}>
           <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="name" className="text-xs text-zinc-400 font-medium">
+                Full Name
+              </FieldLabel>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Athiwat Hirunworawongkun"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="bg-white/[0.02] border-white/10 text-white focus-visible:ring-blaze-orange focus-visible:border-blaze-orange focus-visible:ring-1"
+              />
+            </Field>
             <Field>
               <FieldLabel htmlFor="email" className="text-xs text-zinc-400 font-medium">
                 Email
@@ -79,11 +95,9 @@ export function LoginForm({
               />
             </Field>
             <Field>
-              <div className="flex items-center">
-                <FieldLabel htmlFor="password" className="text-xs text-zinc-400 font-medium">
-                  Password
-                </FieldLabel>
-              </div>
+              <FieldLabel htmlFor="password" className="text-xs text-zinc-400 font-medium">
+                Password
+              </FieldLabel>
               <Input
                 id="password"
                 type="password"
@@ -102,13 +116,13 @@ export function LoginForm({
                 disabled={loading}
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Login
+                Sign Up
               </Button>
             </Field>
             <div className="text-center text-xs text-muted-foreground mt-3">
-              Don't have an account?{" "}
-              <Link href="/register" className="text-blaze-orange hover:underline font-medium">
-                Register
+              Already have an account?{" "}
+              <Link href="/login" className="text-blaze-orange hover:underline font-medium">
+                Login
               </Link>
             </div>
           </FieldGroup>
