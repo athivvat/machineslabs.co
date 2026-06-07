@@ -78,6 +78,10 @@ interface DbCourseWithRelations {
   udemyUrl: string | null
   price: number | null
   published: boolean
+  comingSoon: boolean
+  intendedLearners: string[] | null
+  learningObjectives: string[] | null
+  requirements: string[] | null
   createdAt: Date
   updatedAt: Date
   modules: DbModule[]
@@ -92,6 +96,10 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
+  const orderedLessons = course.modules.flatMap((mod) =>
+    course.lessons.filter((l) => l.moduleId === mod.id)
+  )
+
   // Course Form States
   const [courseTitle, setCourseTitle] = useState(course.title)
   const [courseSlug, setCourseSlug] = useState(course.slug)
@@ -102,6 +110,63 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
   const [courseUdemyUrl, setCourseUdemyUrl] = useState(course.udemyUrl || "")
   const [coursePrice, setCoursePrice] = useState((course.price ?? 0).toString())
   const [coursePublished, setCoursePublished] = useState(course.published)
+  const [courseComingSoon, setCourseComingSoon] = useState(course.comingSoon)
+  const [courseIntendedLearners, setCourseIntendedLearners] = useState<string[]>(
+    course.intendedLearners || []
+  )
+
+  const handleAddIntendedLearner = () => {
+    setCourseIntendedLearners([...courseIntendedLearners, ""])
+  }
+
+  const handleUpdateIntendedLearner = (index: number, value: string) => {
+    const newLearners = [...courseIntendedLearners]
+    newLearners[index] = value
+    setCourseIntendedLearners(newLearners)
+  }
+
+  const handleRemoveIntendedLearner = (index: number) => {
+    const newLearners = courseIntendedLearners.filter((_, i) => i !== index)
+    setCourseIntendedLearners(newLearners)
+  }
+
+  const [courseLearningObjectives, setCourseLearningObjectives] = useState<string[]>(
+    course.learningObjectives || []
+  )
+
+  const handleAddLearningObjective = () => {
+    setCourseLearningObjectives([...courseLearningObjectives, ""])
+  }
+
+  const handleUpdateLearningObjective = (index: number, value: string) => {
+    const newObjectives = [...courseLearningObjectives]
+    newObjectives[index] = value
+    setCourseLearningObjectives(newObjectives)
+  }
+
+  const handleRemoveLearningObjective = (index: number) => {
+    const newObjectives = courseLearningObjectives.filter((_, i) => i !== index)
+    setCourseLearningObjectives(newObjectives)
+  }
+
+  const [courseRequirements, setCourseRequirements] = useState<string[]>(
+    course.requirements || []
+  )
+
+  const handleAddRequirement = () => {
+    setCourseRequirements([...courseRequirements, ""])
+  }
+
+  const handleUpdateRequirement = (index: number, value: string) => {
+    const newRequirements = [...courseRequirements]
+    newRequirements[index] = value
+    setCourseRequirements(newRequirements)
+  }
+
+  const handleRemoveRequirement = (index: number) => {
+    const newRequirements = courseRequirements.filter((_, i) => i !== index)
+    setCourseRequirements(newRequirements)
+  }
 
   // Upload state
   const [isUploading, setIsUploading] = useState(false)
@@ -211,6 +276,10 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
           udemyUrl: coursePlatform !== "local" ? courseUdemyUrl : undefined,
           price: coursePrice ? parseInt(coursePrice, 10) : 0,
           published: coursePublished,
+          comingSoon: courseComingSoon,
+          intendedLearners: courseIntendedLearners.filter(val => val.trim() !== ""),
+          learningObjectives: courseLearningObjectives.filter(val => val.trim() !== ""),
+          requirements: courseRequirements.filter(val => val.trim() !== ""),
         })
         toast.success("Course details saved successfully!")
         router.refresh()
@@ -281,18 +350,18 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
   }
 
   const handleDeleteModule = (moduleId: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete chapter "${title}"? This will delete all lectures inside this chapter.`)) {
+    if (!confirm(`Are you sure you want to delete module "${title}"? This will delete all lectures inside this module.`)) {
       return
     }
 
     startTransition(async () => {
       try {
         await deleteModule(moduleId, course.id)
-        toast.success("Chapter deleted successfully!")
+        toast.success("Module deleted successfully!")
         router.refresh()
       } catch (err) {
         const error = err as Error
-        toast.error(error.message || "Failed to delete chapter")
+        toast.error(error.message || "Failed to delete module")
       }
     })
   }
@@ -433,7 +502,7 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
             value="curriculum"
             className="data-[state=active]:bg-blaze-orange data-[state=active]:text-white text-muted-foreground px-4 py-2 text-sm font-medium rounded-md transition-all"
           >
-            Curriculum Builder ({course.modules.length} Chapters)
+            Curriculum Builder ({course.modules.length} Modules)
           </TabsTrigger>
         </TabsList>
 
@@ -570,6 +639,123 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
                   />
                 </div>
 
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-muted-foreground font-semibold text-white">Intended Learners</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddIntendedLearner}
+                      className="h-8 text-xs text-white border-white/10 hover:bg-white/5 cursor-pointer"
+                    >
+                      <Plus className="mr-1 h-3.5 w-3.5" /> Add Learner
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    {courseIntendedLearners.map((learner, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <Input
+                          value={learner}
+                          onChange={(e) => handleUpdateIntendedLearner(idx, e.target.value)}
+                          placeholder="e.g. Electrical Engineers, IoT Makers, Students..."
+                          className="bg-white/[0.02] border-white/10 text-white focus-visible:ring-blaze-orange"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemoveIntendedLearner(idx)}
+                          className="text-gray-400 hover:text-red-500 hover:bg-white/5 shrink-0 cursor-pointer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  {courseIntendedLearners.length === 0 && (
+                    <p className="text-xs text-muted-foreground italic">No intended learners specified yet. Click "Add Learner" to add.</p>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-muted-foreground font-semibold text-white">Learning Objectives</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddLearningObjective}
+                      className="h-8 text-xs text-white border-white/10 hover:bg-white/5 cursor-pointer"
+                    >
+                      <Plus className="mr-1 h-3.5 w-3.5" /> Add Objective
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    {courseLearningObjectives.map((objective, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <Input
+                          value={objective}
+                          onChange={(e) => handleUpdateLearningObjective(idx, e.target.value)}
+                          placeholder="e.g. Design customized 3D printed objects, Configure IoT sensors..."
+                          className="bg-white/[0.02] border-white/10 text-white focus-visible:ring-blaze-orange"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemoveLearningObjective(idx)}
+                          className="text-gray-400 hover:text-red-500 hover:bg-white/5 shrink-0 cursor-pointer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  {courseLearningObjectives.length === 0 && (
+                    <p className="text-xs text-muted-foreground italic">No learning objectives specified yet. Click "Add Objective" to add.</p>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-muted-foreground font-semibold text-white">Course Requirements</Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddRequirement}
+                      className="h-8 text-xs text-white border-white/10 hover:bg-white/5 cursor-pointer"
+                    >
+                      <Plus className="mr-1 h-3.5 w-3.5" /> Add Requirement
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    {courseRequirements.map((requirement, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <Input
+                          value={requirement}
+                          onChange={(e) => handleUpdateRequirement(idx, e.target.value)}
+                          placeholder="e.g. Basic understanding of electronics, A laptop with Arduino IDE..."
+                          className="bg-white/[0.02] border-white/10 text-white focus-visible:ring-blaze-orange"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemoveRequirement(idx)}
+                          className="text-gray-400 hover:text-red-500 hover:bg-white/5 shrink-0 cursor-pointer"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  {courseRequirements.length === 0 && (
+                    <p className="text-xs text-muted-foreground italic">No requirements specified yet. Click "Add Requirement" to add.</p>
+                  )}
+                </div>
+
                 <div className="flex items-center space-x-2 rounded-lg border border-white/5 bg-white/[0.02] p-4">
                   <input
                     type="checkbox"
@@ -584,6 +770,24 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
                     </Label>
                     <p className="text-xs text-muted-foreground">
                       Enable to display this course on the public Machines Labs School catalog.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2 rounded-lg border border-white/5 bg-white/[0.02] p-4">
+                  <input
+                    type="checkbox"
+                    id="course-coming-soon"
+                    checked={courseComingSoon}
+                    onChange={(e) => setCourseComingSoon(e.target.checked)}
+                    className="h-4 w-4 rounded-sm border-white/20 bg-transparent text-blaze-orange focus:ring-blaze-orange"
+                  />
+                  <div className="grid gap-1 leading-none">
+                    <Label htmlFor="course-coming-soon" className="text-sm font-semibold text-white cursor-pointer">
+                      Coming Soon status
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Mark this course as coming soon (disables enrollment/Udemy buttons).
                     </p>
                   </div>
                 </div>
@@ -673,7 +877,7 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
                   Modify the general catalog properties here. Next.js router uses the <strong>Slug</strong> to render the page at <code>/school/[slug]</code>.
                 </p>
                 <p>
-                  To manage chapters, lectures, and upload video links, switch to the <strong>Curriculum Builder</strong> tab above.
+                  To manage modules, lectures, and upload video links, switch to the <strong>Curriculum Builder</strong> tab above.
                 </p>
               </div>
             </div>
@@ -686,7 +890,7 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
             {/* Builder Header */}
             <div className="flex items-center justify-between bg-white/[0.01] border border-white/5 p-4 rounded-xl">
               <div>
-                <h3 className="text-lg font-semibold text-white">Chapters & Lectures</h3>
+                <h3 className="text-lg font-semibold text-white">Modules & Lectures</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Organize modules, lectures, adjust lessons, and set previews.
                 </p>
@@ -695,7 +899,7 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
                 onClick={handleOpenCreateModule}
                 className="bg-white/10 hover:bg-white/25 text-white border border-white/10"
               >
-                <Plus className="mr-2 h-4 w-4" /> Add Chapter
+                <Plus className="mr-2 h-4 w-4" /> Add Module
               </Button>
             </div>
 
@@ -703,17 +907,17 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
             {course.modules.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 bg-white/[0.01] border border-white/5 border-dashed rounded-xl text-center">
                 <Layers className="h-12 w-12 text-muted-foreground/20 mb-3" />
-                <h4 className="text-base font-semibold text-white">No chapters defined</h4>
+                <h4 className="text-base font-semibold text-white">No modules defined</h4>
                 <p className="text-xs text-muted-foreground max-w-sm mt-1 mb-4">
-                  Chapters group lectures together. Create a chapter first to start adding lectures.
+                  Modules group lectures together. Create a module first to start adding lectures.
                 </p>
                 <Button onClick={handleOpenCreateModule} className="bg-blaze-orange hover:bg-flame-orange text-white">
-                  <Plus className="mr-2 h-4 w-4" /> Add Your First Chapter
+                  <Plus className="mr-2 h-4 w-4" /> Add Your First Module
                 </Button>
               </div>
             ) : (
               <div className="flex flex-col gap-4">
-                {course.modules.map((mod) => {
+                {course.modules.map((mod, moduleIdx) => {
                   const lessons = getModuleLessons(mod.id)
                   const isExpanded = expandedModules[mod.id]
 
@@ -731,13 +935,13 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
                           >
                             {isExpanded ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
                           </button>
-                          <div className="flex items-center gap-2">
-                            <span className="font-mono text-xs text-muted-foreground bg-white/5 px-2 py-0.5 rounded-md">
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="font-mono text-xs text-muted-foreground bg-white/5 px-2 py-0.5 rounded-md whitespace-nowrap">
                               Order {mod.order}
                             </span>
                           </div>
                           <div className="min-w-0">
-                            <h4 className="font-semibold text-white text-base truncate">{mod.title}</h4>
+                            <h4 className="font-semibold text-white text-base truncate">Module {moduleIdx + 1}: {mod.title}</h4>
                             {mod.description && (
                               <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
                                 {mod.description}
@@ -779,7 +983,7 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
                         <div className="p-4 bg-zinc-950/20">
                           {lessons.length === 0 ? (
                             <div className="text-center py-6 text-xs text-muted-foreground">
-                              No lectures in this chapter. Click <strong>Add Lecture</strong> to build content.
+                              No lectures in this module. Click <strong>Add Lecture</strong> to build content.
                             </div>
                           ) : (
                             <div className="overflow-x-auto">
@@ -794,19 +998,24 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
                                   </tr>
                                 </thead>
                                 <tbody>
-                                  {lessons.map((lesson) => (
-                                    <tr
-                                      key={lesson.id}
-                                      className="border-b border-white/5 last:border-b-0 hover:bg-white/[0.01] transition-colors"
-                                    >
-                                      <td className="py-3">
-                                        <div className="flex flex-col gap-0.5">
-                                          <span className="font-semibold text-white">{lesson.title}</span>
-                                          <span className="text-[10px] font-mono text-muted-foreground">
-                                            Order {lesson.order} &bull; Slug: {lesson.slug}
-                                          </span>
-                                        </div>
-                                      </td>
+                                  {lessons.map((lesson) => {
+                                    const lessonIndex = orderedLessons.findIndex((l) => l.id === lesson.id) + 1
+                                    return (
+                                      <tr
+                                        key={lesson.id}
+                                        className="border-b border-white/5 last:border-b-0 hover:bg-white/[0.01] transition-colors"
+                                      >
+                                        <td className="py-3">
+                                          <div className="flex flex-col gap-0.5 min-w-0">
+                                            <div className="flex items-start gap-1.5 font-semibold text-white min-w-0">
+                                              <span className="shrink-0 text-muted-foreground font-mono select-none">{lessonIndex}.</span>
+                                              <span className="break-words">{lesson.title}</span>
+                                            </div>
+                                            <span className="text-[10px] font-mono text-muted-foreground pl-5">
+                                              Order {lesson.order} &bull; Slug: {lesson.slug}
+                                            </span>
+                                          </div>
+                                        </td>
                                       <td className="py-3">
                                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
                                           {lesson.type === "video" && <Play className="h-3.5 w-3.5 text-blue-400" />}
@@ -849,7 +1058,8 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
                                         </div>
                                       </td>
                                     </tr>
-                                  ))}
+                                  );
+                                })}
                                 </tbody>
                               </table>
                             </div>
@@ -873,15 +1083,15 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
           <SheetHeader className="pb-4 border-b border-white/5">
             <SheetTitle className="text-lg font-bold text-white flex items-center gap-2">
               <Folder className="h-5 w-5 text-blaze-orange" />
-              {moduleMode === "create" ? "Add Chapter" : "Edit Chapter"}
+              {moduleMode === "create" ? "Add Module" : "Edit Module"}
             </SheetTitle>
             <SheetDescription className="text-muted-foreground text-xs">
-              Define the chapter settings. Chapters contain lectures.
+              Define the module settings. Modules contain lectures.
             </SheetDescription>
           </SheetHeader>
           <form onSubmit={handleModuleSubmit} className="space-y-4 py-4">
             <div className="space-y-1.5">
-              <Label htmlFor="module-title" className="text-xs text-muted-foreground">Chapter Title</Label>
+              <Label htmlFor="module-title" className="text-xs text-muted-foreground">Module Title</Label>
               <Input
                 id="module-title"
                 placeholder="E.g., Module 1: Introduction to Electronics"
@@ -896,7 +1106,7 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
               <Label htmlFor="module-desc" className="text-xs text-muted-foreground">Description (Optional)</Label>
               <Input
                 id="module-desc"
-                placeholder="Brief summary of the chapter lessons"
+                placeholder="Brief summary of the module lessons"
                 value={moduleDescription}
                 onChange={(e) => setModuleDescription(e.target.value)}
                 className="bg-white/[0.02] border-white/10 text-white"
@@ -931,7 +1141,7 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
                 className="bg-blaze-orange hover:bg-flame-orange text-white"
               >
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {moduleMode === "create" ? "Add Chapter" : "Save Changes"}
+                {moduleMode === "create" ? "Add Module" : "Save Changes"}
               </Button>
             </SheetFooter>
           </form>

@@ -32,6 +32,10 @@ export interface Course {
   udemyUrl?: string
   price: number // in Baht
   published: boolean
+  comingSoon: boolean
+  intendedLearners?: string[]
+  learningObjectives?: string[]
+  requirements?: string[]
   modules?: Module[]
   createdAt: string
   updatedAt: string
@@ -54,6 +58,10 @@ export async function getCourses(): Promise<Course[]> {
     udemyUrl: c.udemyUrl || undefined,
     price: c.price || 0,
     published: c.published,
+    comingSoon: c.comingSoon,
+    intendedLearners: c.intendedLearners || undefined,
+    learningObjectives: c.learningObjectives || undefined,
+    requirements: c.requirements || undefined,
     createdAt: c.createdAt.toISOString(),
     updatedAt: c.updatedAt.toISOString(),
   }))
@@ -90,6 +98,10 @@ export async function getCourseBySlug(slug: string): Promise<Course | null> {
     udemyUrl: c.udemyUrl || undefined,
     price: c.price || 0,
     published: c.published,
+    comingSoon: c.comingSoon,
+    intendedLearners: c.intendedLearners || undefined,
+    learningObjectives: c.learningObjectives || undefined,
+    requirements: c.requirements || undefined,
     createdAt: c.createdAt.toISOString(),
     updatedAt: c.updatedAt.toISOString(),
     modules: c.modules.map((m) => ({

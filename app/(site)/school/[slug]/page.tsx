@@ -13,7 +13,8 @@ import {
   HelpCircleIcon, 
   CheckCircle2Icon,
   PlayIcon,
-  LockIcon
+  LockIcon,
+  ChevronDownIcon
 } from "lucide-react";
 
 interface CoursePageProps {
@@ -51,7 +52,7 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
     notFound();
   }
 
-  const { title, summary, description, platform, price, udemyUrl, modules, thumbnailUrl } = course;
+  const { title, summary, description, platform, price, udemyUrl, modules, thumbnailUrl, comingSoon, intendedLearners, learningObjectives, requirements } = course;
 
   // Format Price
   const priceDisplay = price && price > 0 ? `฿${price.toLocaleString()}` : "ฟรี";
@@ -60,12 +61,13 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
   const totalLessons = modules?.reduce((acc, m) => acc + m.lessons.length, 0) || 0;
   const totalMinutes = modules?.reduce((acc, m) => acc + m.lessons.reduce((sum, l) => sum + l.duration, 0), 0) || 0;
   const totalHours = Math.round((totalMinutes / 60) * 10) / 10;
+  let lessonCounter = 0;
 
   return (
     <div className="bg-black min-h-screen text-white pb-20">
       
       {/* Full-width Hero Header with Background Image & Gradient */}
-      <div className="relative w-full border-b border-white/10 overflow-hidden ">
+      <div className="relative w-full border-b border-white/10 overflow-hidden z-0">
         {thumbnailUrl && (
           <>
             <Image
@@ -77,7 +79,7 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
               className="absolute inset-0 object-cover select-none pointer-events-none -z-10"
             />
             {/* Vertical Gradient: Darker top and bottom to blend with header and page content */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/95  via-black/70 to-black/40 -z-10" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/95  via-black/70 to-black/50 -z-10" />
           </>
         )}
         
@@ -107,7 +109,7 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
             </h1>
             
             {/* Course Summary */}
-            <p className="mt-4 text-lg text-gray-300 leading-relaxed">
+            <p className="mt-4 text-lg text-white leading-relaxed">
               {summary}
             </p>
 
@@ -174,6 +176,66 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
               </div>
             </div>
 
+            {/* Learning Objectives */}
+            {learningObjectives && learningObjectives.length > 0 && (
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight text-white mb-6 border-l-4 border-blaze-orange pl-3">
+                  สิ่งที่คุณจะได้เรียนรู้จากคอร์สนี้
+                </h2>
+                <div className="grid gap-3 sm:grid-cols-2 bg-white/[0.02] border border-white/5 rounded-2xl p-6">
+                  {learningObjectives.map((objective, idx) => (
+                    <div 
+                      key={idx} 
+                      className="flex items-start gap-2.5 py-1"
+                    >
+                      <CheckCircle2Icon className="h-5 w-5 text-blaze-orange shrink-0 mt-0.5" />
+                      <span className="text-gray-300 text-sm leading-relaxed">{objective}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Intended Learners */}
+            {intendedLearners && intendedLearners.length > 0 && (
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight text-white mb-6 border-l-4 border-blaze-orange pl-3">
+                  คอร์สนี้เหมาะสำหรับใคร?
+                </h2>
+                <div className="grid gap-1 sm:grid-cols-1">
+                  {intendedLearners.map((learner, idx) => (
+                    <div 
+                      key={idx} 
+                      className="flex items-start gap-2 py-1 px-2"
+                    >
+                      <CheckCircle2Icon className="h-5 w-5 text-blaze-orange shrink-0 mt-0.5" />
+                      <span className="text-gray-300 text-sm leading-relaxed">{learner}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Requirements */}
+            {requirements && requirements.length > 0 && (
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight text-white mb-6 border-l-4 border-blaze-orange pl-3">
+                  ความรู้หรือเครื่องมือพื้นฐานที่จำเป็น
+                </h2>
+                <div className="grid gap-1 sm:grid-cols-1">
+                  {requirements.map((req, idx) => (
+                    <div 
+                      key={idx} 
+                      className="flex items-start gap-2 py-1 px-2"
+                    >
+                      <CheckCircle2Icon className="h-5 w-5 text-blaze-orange shrink-0 mt-0.5" />
+                      <span className="text-gray-300 text-sm leading-relaxed">{req}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Curriculum */}
             {modules && modules.length > 0 && (
               <div>
@@ -182,49 +244,61 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
                 </h2>
 
                 <div className="space-y-6">
-                  {modules.map((module) => (
-                    <div 
+                  {modules.map((module, moduleIdx) => (
+                    <details 
                       key={module.id} 
-                      className="border border-white/10 rounded-xl overflow-hidden bg-white/[0.01]"
+                      open={moduleIdx === 0}
+                      className="group border border-white/10 rounded-xl overflow-hidden bg-white/[0.01] [&_summary::-webkit-details-marker]:hidden"
                     >
                       {/* Module Header */}
-                      <div className="bg-white/[0.03] px-6 py-4 border-b border-white/10">
-                        <h3 className="font-bold text-white text-lg">{module.title}</h3>
-                        {module.description && (
-                          <p className="text-sm text-gray-400 mt-1">{module.description}</p>
-                        )}
-                      </div>
+                      <summary className="flex items-center justify-between bg-white/[0.03] px-6 py-4 cursor-pointer list-none select-none hover:bg-white/[0.05] transition-colors focus:outline-hidden">
+                        <div>
+                          <h3 className="font-bold text-white text-lg">Module {moduleIdx + 1}: {module.title}</h3>
+                          {module.description && (
+                            <p className="text-sm text-gray-400 mt-1">{module.description}</p>
+                          )}
+                        </div>
+                        <span className="text-gray-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-4">
+                          <ChevronDownIcon size={18} />
+                        </span>
+                      </summary>
 
                       {/* Lesson List */}
-                      <div className="divide-y divide-white/5 font-mono">
-                        {module.lessons.map((lesson) => (
-                          <div 
-                            key={lesson.id} 
-                            className="px-6 py-3.5 flex items-center justify-between text-sm hover:bg-white/[0.02] transition-colors"
-                          >
-                            <div className="flex items-center gap-3">
-                              {lesson.type === "video" && <PlayIcon size={14} className="text-blaze-orange shrink-0" />}
-                              {lesson.type === "article" && <FileTextIcon size={14} className="text-blaze-orange shrink-0" />}
-                              {lesson.type === "quiz" && <HelpCircleIcon size={14} className="text-blaze-orange shrink-0" />}
-                              {lesson.type === "assignment" && <CheckCircle2Icon size={14} className="text-blaze-orange shrink-0" />}
-                              
-                              <span className="text-gray-300">{lesson.title}</span>
-                            </div>
+                      <div className="divide-y divide-white/5 font-mono border-t border-white/10">
+                        {module.lessons.map((lesson) => {
+                          lessonCounter++;
+                          return (
+                            <div 
+                              key={lesson.id} 
+                              className="px-6 py-3.5 flex items-start justify-between text-sm hover:bg-white/[0.02] transition-colors gap-4"
+                            >
+                              <div className="flex items-start gap-3 min-w-0">
+                                {lesson.type === "video" && <PlayIcon size={14} className="text-blaze-orange shrink-0 mt-0.5" />}
+                                {lesson.type === "article" && <FileTextIcon size={14} className="text-blaze-orange shrink-0 mt-0.5" />}
+                                {lesson.type === "quiz" && <HelpCircleIcon size={14} className="text-blaze-orange shrink-0 mt-0.5" />}
+                                {lesson.type === "assignment" && <CheckCircle2Icon size={14} className="text-blaze-orange shrink-0" />}
+                                
+                                <div className="flex items-start gap-2 text-gray-300 min-w-0">
+                                  <span className="shrink-0 text-gray-500 font-mono select-none">{lessonCounter}.</span>
+                                  <span className="break-words">{lesson.title}</span>
+                                </div>
+                              </div>
 
-                            <div className="flex items-center gap-3">
-                              {lesson.isFreePreview ? (
-                                <span className="text-xs bg-blaze-orange/20 text-blaze-orange px-2 py-0.5 rounded font-bold">
-                                  ตัวอย่างฟรี
-                                </span>
-                              ) : (
-                                <LockIcon size={12} className="text-gray-600" />
-                              )}
-                              <span className="text-xs text-gray-500">{lesson.duration} นาที</span>
+                              <div className="flex items-center gap-3 shrink-0 mt-0.5">
+                                {lesson.isFreePreview ? (
+                                  <span className="text-xs bg-blaze-orange/20 text-blaze-orange px-2 py-0.5 rounded font-bold">
+                                    ตัวอย่างฟรี
+                                  </span>
+                                ) : (
+                                  <LockIcon size={12} className="text-gray-600" />
+                                )}
+                                <span className="text-xs text-gray-500">{lesson.duration} นาที</span>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
-                    </div>
+                    </details>
                   ))}
                 </div>
               </div>
@@ -232,7 +306,7 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
           </div>
 
           {/* Right Sidebar - Pricing & Instructor Card */}
-          <div className="space-y-6">
+          <div className="space-y-6 lg:sticky lg:top-28">
             
             {/* Pricing & CTA Card */}
             <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6 lg:p-8 flex flex-col justify-between">
@@ -247,26 +321,37 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
               </div>
 
               <div className="mt-8 space-y-3">
-                {/* Udemy Button */}
-                {(platform === "udemy" || platform === "both") && udemyUrl && (
-                  <a
-                    href={udemyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-violet-700 transition-colors duration-200"
-                  >
-                    ลงทะเบียนเรียนบน Udemy
-                    <ExternalLinkIcon size={16} />
-                  </a>
-                )}
-
-                {/* Local Platform Button */}
-                {(platform === "local" || platform === "both") && (
+                {comingSoon ? (
                   <button
-                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-blaze-orange px-4 py-3 text-center text-sm font-semibold text-white hover:bg-flame-orange transition-colors duration-200 shadow-lg shadow-blaze-orange/20 cursor-pointer"
+                    disabled
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-center text-sm font-semibold text-gray-500 cursor-not-allowed select-none"
                   >
-                    เริ่มเข้าเรียนหลักสูตรนี้
+                    Coming Soon
                   </button>
+                ) : (
+                  <>
+                    {/* Udemy Button */}
+                    {(platform === "udemy" || platform === "both") && udemyUrl && (
+                      <a
+                        href={udemyUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-3 text-center text-sm font-semibold text-white hover:bg-violet-700 transition-colors duration-200"
+                      >
+                        ลงทะเบียนเรียนบน Udemy
+                        <ExternalLinkIcon size={16} />
+                      </a>
+                    )}
+
+                    {/* Local Platform Button */}
+                    {(platform === "local" || platform === "both") && (
+                      <button
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-blaze-orange px-4 py-3 text-center text-sm font-semibold text-white hover:bg-flame-orange transition-colors duration-200 shadow-lg shadow-blaze-orange/20 cursor-pointer"
+                      >
+                        เริ่มเข้าเรียนหลักสูตรนี้
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
 

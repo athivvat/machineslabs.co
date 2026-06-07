@@ -29,6 +29,10 @@ export async function createCourse(data: {
   udemyUrl?: string;
   price?: number;
   published: boolean;
+  comingSoon?: boolean;
+  intendedLearners?: string[];
+  learningObjectives?: string[];
+  requirements?: string[];
 }) {
   await verifySession();
 
@@ -43,6 +47,10 @@ export async function createCourse(data: {
     udemyUrl: data.udemyUrl || null,
     price: data.price !== undefined ? data.price : 0,
     published: data.published,
+    comingSoon: data.comingSoon !== undefined ? data.comingSoon : false,
+    intendedLearners: data.intendedLearners || null,
+    learningObjectives: data.learningObjectives || null,
+    requirements: data.requirements || null,
   });
 
   revalidatePath("/garage");
@@ -63,6 +71,10 @@ export async function updateCourse(
     udemyUrl?: string;
     price?: number;
     published: boolean;
+    comingSoon?: boolean;
+    intendedLearners?: string[];
+    learningObjectives?: string[];
+    requirements?: string[];
   }
 ) {
   await verifySession();
@@ -79,6 +91,10 @@ export async function updateCourse(
       udemyUrl: data.udemyUrl || null,
       price: data.price !== undefined ? data.price : 0,
       published: data.published,
+      comingSoon: data.comingSoon !== undefined ? data.comingSoon : false,
+      intendedLearners: data.intendedLearners || null,
+      learningObjectives: data.learningObjectives || null,
+      requirements: data.requirements || null,
       updatedAt: new Date(),
     })
     .where(eq(lmsCourses.id, id));

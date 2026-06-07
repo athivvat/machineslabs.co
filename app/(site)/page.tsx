@@ -42,9 +42,9 @@ export default async function Home() {
           <div className="mx-auto max-w-6xl px-6">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
               <div>
-                <p className="font-mono text-xs uppercase tracking-widest text-blaze-orange font-bold">Machines School</p>
-                <h2 className="mt-3 text-3xl font-extrabold tracking-tight md:text-5xl text-gray-900">
-                  คอร์สเรียนแนะนำ
+                <p className="font-mono text-xs uppercase tracking-widest text-blaze-orange font-bold">คอร์สเรียนแนะนำ</p>
+                <h2 className="mt-3 text-3xl font-bold tracking-tight md:text-5xl text-gray-900">
+                  <span className="font-tiny5 text-3xl md:text-5xl">M</span>achines School
                 </h2>
                 <p className="mt-4 text-gray-600 max-w-2xl">
                   พัฒนาทักษะวิศวกรรมและการเป็นเมกเกอร์ด้วยคอร์สสอนลงมือทำจริง 

@@ -22,6 +22,13 @@
       "when": 1780676020454,
       "tag": "0002_add_store_product",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1780836779240,
+      "tag": "0003_update_course_properties_and_features",
+      "breakpoints": true
     }
   ]
 }

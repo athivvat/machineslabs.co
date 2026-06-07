@@ -66,6 +66,10 @@ interface DbCourse {
   udemyUrl: string | null;
   price: number | null;
   published: boolean;
+  comingSoon: boolean;
+  intendedLearners: string[] | null;
+  learningObjectives: string[] | null;
+  requirements: string[] | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -96,6 +100,55 @@ export function CoursesClient({ initialCourses }: CoursesClientProps) {
   const [formUdemyUrl, setFormUdemyUrl] = useState("");
   const [formPrice, setFormPrice] = useState("");
   const [formPublished, setFormPublished] = useState(false);
+  const [formComingSoon, setFormComingSoon] = useState(false);
+  const [formIntendedLearners, setFormIntendedLearners] = useState<string[]>([]);
+  const [formLearningObjectives, setFormLearningObjectives] = useState<string[]>([]);
+  const [formRequirements, setFormRequirements] = useState<string[]>([]);
+
+  const handleAddRequirement = () => {
+    setFormRequirements([...formRequirements, ""]);
+  };
+
+  const handleUpdateRequirement = (index: number, value: string) => {
+    const newRequirements = [...formRequirements];
+    newRequirements[index] = value;
+    setFormRequirements(newRequirements);
+  };
+
+  const handleRemoveRequirement = (index: number) => {
+    const newRequirements = formRequirements.filter((_, i) => i !== index);
+    setFormRequirements(newRequirements);
+  };
+
+  const handleAddLearningObjective = () => {
+    setFormLearningObjectives([...formLearningObjectives, ""]);
+  };
+
+  const handleUpdateLearningObjective = (index: number, value: string) => {
+    const newObjectives = [...formLearningObjectives];
+    newObjectives[index] = value;
+    setFormLearningObjectives(newObjectives);
+  };
+
+  const handleRemoveLearningObjective = (index: number) => {
+    const newObjectives = formLearningObjectives.filter((_, i) => i !== index);
+    setFormLearningObjectives(newObjectives);
+  };
+
+  const handleAddIntendedLearner = () => {
+    setFormIntendedLearners([...formIntendedLearners, ""]);
+  };
+
+  const handleUpdateIntendedLearner = (index: number, value: string) => {
+    const newLearners = [...formIntendedLearners];
+    newLearners[index] = value;
+    setFormIntendedLearners(newLearners);
+  };
+
+  const handleRemoveIntendedLearner = (index: number) => {
+    const newLearners = formIntendedLearners.filter((_, i) => i !== index);
+    setFormIntendedLearners(newLearners);
+  };
 
   // Upload state
   const [isUploading, setIsUploading] = useState(false);
@@ -156,6 +209,10 @@ export function CoursesClient({ initialCourses }: CoursesClientProps) {
     setFormUdemyUrl("");
     setFormPrice("0");
     setFormPublished(false);
+    setFormComingSoon(false);
+    setFormIntendedLearners([]);
+    setFormLearningObjectives([]);
+    setFormRequirements([]);
     setIsCreateOpen(true);
   };
 
@@ -211,6 +268,10 @@ export function CoursesClient({ initialCourses }: CoursesClientProps) {
           udemyUrl: formPlatform !== "local" ? formUdemyUrl : undefined,
           price: formPrice ? parseInt(formPrice, 10) : 0,
           published: formPublished,
+          comingSoon: formComingSoon,
+          intendedLearners: formIntendedLearners.filter(val => val.trim() !== ""),
+          learningObjectives: formLearningObjectives.filter(val => val.trim() !== ""),
+          requirements: formRequirements.filter(val => val.trim() !== ""),
         });
         toast.success("Course created successfully!");
         setIsCreateOpen(false);
@@ -769,6 +830,123 @@ export function CoursesClient({ initialCourses }: CoursesClientProps) {
               />
             </div>
 
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm text-muted-foreground font-semibold text-white">Intended Learners</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddIntendedLearner}
+                  className="h-8 text-xs text-white border-white/10 hover:bg-white/5 cursor-pointer"
+                >
+                  <Plus className="mr-1 h-3.5 w-3.5" /> Add Learner
+                </Button>
+              </div>
+              <div className="space-y-2">
+                {formIntendedLearners.map((learner, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <Input
+                      value={learner}
+                      onChange={(e) => handleUpdateIntendedLearner(idx, e.target.value)}
+                      placeholder="e.g. Electrical Engineers, IoT Makers, Students..."
+                      className="bg-white/[0.02] border-white/10 text-white focus-visible:ring-blaze-orange"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveIntendedLearner(idx)}
+                      className="text-gray-400 hover:text-red-500 hover:bg-white/5 shrink-0 cursor-pointer"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              {formIntendedLearners.length === 0 && (
+                <p className="text-xs text-muted-foreground italic">No intended learners specified yet. Click "Add Learner" to add.</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm text-muted-foreground font-semibold text-white">Learning Objectives</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddLearningObjective}
+                  className="h-8 text-xs text-white border-white/10 hover:bg-white/5 cursor-pointer"
+                >
+                  <Plus className="mr-1 h-3.5 w-3.5" /> Add Objective
+                </Button>
+              </div>
+              <div className="space-y-2">
+                {formLearningObjectives.map((objective, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <Input
+                      value={objective}
+                      onChange={(e) => handleUpdateLearningObjective(idx, e.target.value)}
+                      placeholder="e.g. Design customized 3D printed objects, Configure IoT sensors..."
+                      className="bg-white/[0.02] border-white/10 text-white focus-visible:ring-blaze-orange"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveLearningObjective(idx)}
+                      className="text-gray-400 hover:text-red-500 hover:bg-white/5 shrink-0 cursor-pointer"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              {formLearningObjectives.length === 0 && (
+                <p className="text-xs text-muted-foreground italic">No learning objectives specified yet. Click "Add Objective" to add.</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm text-muted-foreground font-semibold text-white">Course Requirements</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAddRequirement}
+                  className="h-8 text-xs text-white border-white/10 hover:bg-white/5 cursor-pointer"
+                >
+                  <Plus className="mr-1 h-3.5 w-3.5" /> Add Requirement
+                </Button>
+              </div>
+              <div className="space-y-2">
+                {formRequirements.map((requirement, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <Input
+                      value={requirement}
+                      onChange={(e) => handleUpdateRequirement(idx, e.target.value)}
+                      placeholder="e.g. Basic understanding of electronics, A laptop with Arduino IDE..."
+                      className="bg-white/[0.02] border-white/10 text-white focus-visible:ring-blaze-orange"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveRequirement(idx)}
+                      className="text-gray-400 hover:text-red-500 hover:bg-white/5 shrink-0 cursor-pointer"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              {formRequirements.length === 0 && (
+                <p className="text-xs text-muted-foreground italic">No requirements specified yet. Click "Add Requirement" to add.</p>
+              )}
+            </div>
+
             <div className="flex items-center space-x-2 rounded-lg border border-white/5 bg-white/[0.01] p-3">
               <input
                 type="checkbox"
@@ -787,6 +965,27 @@ export function CoursesClient({ initialCourses }: CoursesClientProps) {
                 <p className="text-xs text-muted-foreground">
                   If selected, this course will show up in the public catalog
                   right away.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2 rounded-lg border border-white/5 bg-white/[0.01] p-3">
+              <input
+                type="checkbox"
+                id="coming-soon"
+                checked={formComingSoon}
+                onChange={(e) => setFormComingSoon(e.target.checked)}
+                className="h-4 w-4 rounded-sm border-white/20 bg-transparent text-blaze-orange focus:ring-blaze-orange"
+              />
+              <div className="grid gap-1.5 leading-none">
+                <Label
+                  htmlFor="coming-soon"
+                  className="text-sm font-semibold text-white cursor-pointer"
+                >
+                  Coming Soon
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Mark this course as coming soon (disables enrollment/Udemy buttons).
                 </p>
               </div>
             </div>

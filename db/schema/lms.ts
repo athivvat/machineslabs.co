@@ -26,6 +26,10 @@ export const lmsCourses = pgTable(
     
     price: integer("price"), // Price in cents (e.g. 4900 for $49.00). Null/0 = Free
     published: boolean("published").notNull().default(false),
+    comingSoon: boolean("coming_soon").notNull().default(false),
+    intendedLearners: jsonb("intended_learners").$type<string[]>(),
+    learningObjectives: jsonb("learning_objectives").$type<string[]>(),
+    requirements: jsonb("requirements").$type<string[]>(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .notNull()
