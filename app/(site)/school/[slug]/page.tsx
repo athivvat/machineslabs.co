@@ -266,7 +266,7 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
                       </summary>
 
                       {/* Lesson List */}
-                      <div className="divide-y divide-white/5 font-mono border-t border-white/10">
+                      <div className="divide-y divide-white/5 border-t border-white/10">
                         {module.lessons.map((lesson) => {
                           lessonCounter++;
                           return (
