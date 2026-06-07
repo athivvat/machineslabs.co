@@ -4,6 +4,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
+import { redirect } from "next/navigation"
 
 import data from "./data.json"
 
@@ -13,7 +14,7 @@ export default async function Page() {
   })
 
   if (!session) {
-    return // TODO: redirect to login page
+    redirect("/login")
   }
 
   const user = {

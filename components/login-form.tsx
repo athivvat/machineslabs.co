@@ -48,14 +48,20 @@ export function LoginForm({
   };
 
   return (
-    <Card>
-      <CardHeader className="text-center">
-        <CardTitle>Login to Machines Labs</CardTitle>
-        <CardDescription>
-          Enter your email below to login to your account
+    <Card className={cn("border-white/10 bg-zinc-900/40 backdrop-blur-md shadow-2xl relative overflow-hidden", className)} {...props}>
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blaze-orange to-transparent" />
+      <CardHeader className="text-center pt-6">
+        <div className="flex justify-center mb-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blaze-orange/10 border border-blaze-orange/20 shadow-[0_0_20px_rgba(240,90,0,0.15)]">
+            <span className="font-tiny5 text-3xl font-normal text-blaze-orange">M</span>
+          </div>
+        </div>
+        <CardTitle className="text-xl font-bold tracking-tight">Login to Machines Labs</CardTitle>
+        <CardDescription className="text-xs text-muted-foreground mt-1">
+          Enter your email below to access the Garage Back Office
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pb-6">
         {error && (
           <div className="mb-4 p-3 rounded-xl bg-red-950/45 border border-red-800 text-red-200 text-xs font-semibold">
             {error}
@@ -64,7 +70,7 @@ export function LoginForm({
         <form onSubmit={handleSubmit}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="email">
+              <FieldLabel htmlFor="email" className="text-xs text-zinc-400 font-medium">
                 Email
               </FieldLabel>
               <Input
@@ -74,11 +80,12 @@ export function LoginForm({
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="bg-white/[0.02] border-white/10 text-white focus-visible:ring-blaze-orange focus-visible:border-blaze-orange focus-visible:ring-1"
               />
             </Field>
             <Field>
               <div className="flex items-center">
-                <FieldLabel htmlFor="password">
+                <FieldLabel htmlFor="password" className="text-xs text-zinc-400 font-medium">
                   Password
                 </FieldLabel>
               </div>
@@ -89,13 +96,14 @@ export function LoginForm({
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
+                className="bg-white/[0.02] border-white/10 text-white focus-visible:ring-blaze-orange focus-visible:border-blaze-orange focus-visible:ring-1"
               />
             </Field>
-            <Field className="pt-2">
+            <Field className="pt-3">
               <Button
                 type="submit"
                 size="lg"
-                className="w-full cursor-pointer bg-white"
+                className="w-full cursor-pointer bg-blaze-orange hover:bg-flame-orange text-white font-medium shadow-md shadow-blaze-orange/10 transition-colors duration-200"
                 disabled={loading}
               >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

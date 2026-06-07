@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Prompt } from "next/font/google";
+import { Geist, Geist_Mono, Prompt, Tiny5 } from "next/font/google";
 import "../globals.css";
 import { cn } from "@/lib/utils";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +12,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const tiny5 = Tiny5({
+  variable: "--font-tiny5",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 const prompt = Prompt({
@@ -39,6 +45,7 @@ export default function GarageLayout({
         "antialiased",
         geistSans.variable,
         geistMono.variable,
+        tiny5.variable,
         prompt.variable,
         "font-sans",
       )}
