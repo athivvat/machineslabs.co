@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
+import NextImage from "next/image"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { toast } from "sonner"
@@ -106,6 +107,12 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
   const [courseSummary, setCourseSummary] = useState(course.summary || "")
   const [courseDescription, setCourseDescription] = useState(course.description || "")
   const [courseThumbnailUrl, setCourseThumbnailUrl] = useState(course.thumbnailUrl || "")
+  const [thumbnailError, setThumbnailError] = useState(false)
+
+  const updateThumbnailUrl = (url: string) => {
+    setCourseThumbnailUrl(url)
+    setThumbnailError(false)
+  }
   const [coursePlatform, setCoursePlatform] = useState<"local" | "udemy" | "both">(course.platform)
   const [courseUdemyUrl, setCourseUdemyUrl] = useState(course.udemyUrl || "")
   const [coursePrice, setCoursePrice] = useState((course.price ?? 0).toString())
@@ -191,7 +198,7 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
       }
 
       const data = await res.json()
-      setCourseThumbnailUrl(data.url)
+      updateThumbnailUrl(data.url)
       toast.success("Image uploaded successfully!")
     } catch (err) {
       const error = err as Error
@@ -588,7 +595,7 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
                     <Input
                       id="course-thumbnail"
                       value={courseThumbnailUrl}
-                      onChange={(e) => setCourseThumbnailUrl(e.target.value)}
+                      onChange={(e) => updateThumbnailUrl(e.target.value)}
                       placeholder="/media/your-thumbnail.jpg"
                       className="bg-white/[0.02] border-white/10 text-white focus-visible:ring-blaze-orange flex-1"
                     />
@@ -825,23 +832,23 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
                 </CardHeader>
                 <CardContent className="flex flex-col items-center justify-center p-6 pt-0">
                   <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-white/10 bg-zinc-950 flex items-center justify-center">
-                    {courseThumbnailUrl ? (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img
+                    {courseThumbnailUrl && !thumbnailError ? (
+                      <NextImage
                         src={courseThumbnailUrl}
                         alt="Course thumbnail preview"
-                        className="object-cover w-full h-full"
-                        onError={(e) => {
-                          // Fallback on error
-                          ;(e.target as HTMLImageElement).src = ""
-                          ;(e.target as HTMLImageElement).parentElement?.classList.add("no-img")
-                        }}
+                        fill
+                        className="object-cover"
+                        onError={() => setThumbnailError(true)}
                       />
                     ) : null}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground/40 gap-1 bg-zinc-900 pointer-events-none select-none [.no-img_&]:flex [img+&]:hidden">
-                      <ImageIcon className="h-10 w-10 text-muted-foreground/20" />
-                      <span className="text-xs">No image provided</span>
-                    </div>
+                    {(!courseThumbnailUrl || thumbnailError) && (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground/40 gap-1 bg-zinc-900 pointer-events-none select-none">
+                        <ImageIcon className="h-10 w-10 text-muted-foreground/20" />
+                        <span className="text-xs">
+                          {thumbnailError ? "Failed to load image" : "No image provided"}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="w-full mt-4 space-y-2 border-t border-white/5 pt-4">
                     <div className="flex justify-between text-xs">

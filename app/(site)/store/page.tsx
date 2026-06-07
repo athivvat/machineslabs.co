@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { 
   Search, 
   Cpu, 
@@ -139,11 +140,13 @@ export default function StoreFrontPage() {
       <div className="relative w-full border-b border-white/10 overflow-hidden pt-36 pb-20">
         
         {/* Cover Hero Background Image */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src="/images/electionics-components.webp"
           alt=""
-          className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
+          fill
+          priority
+          sizes="100vw"
+          className="absolute inset-0 object-cover select-none pointer-events-none"
         />
 
         {/* Vertical/Horizontal Gradients for text contrast and edge blending */}
