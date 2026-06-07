@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { getCourses } from "@/lib/courses";
 import CourseCard from "@/components/course-card";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "คอร์สเรียนทั้งหมด — Machines Labs",
   description:

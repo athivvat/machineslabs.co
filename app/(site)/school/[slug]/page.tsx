@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCourseBySlug, getCourses } from "@/lib/courses";
+
+export const revalidate = 60;
 import { 
   ArrowLeftIcon, 
   BookOpenIcon, 

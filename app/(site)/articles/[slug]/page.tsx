@@ -8,6 +8,8 @@ import ShareButtons from "@/components/share-buttons";
 import type { Category, Media } from "@/payload-types";
 import { getPostBySlug, getPosts } from "@/lib/posts";
 
+export const revalidate = 60;
+
 type Params = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {

@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import PostCard from "@/components/post-card";
 import { getPosts } from "@/lib/posts";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "บทความ — Machines Labs",
   description: "บทความล่าสุดจาก Machines Labs",
