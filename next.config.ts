@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
         hostname: "*.r2.dev",
       },
     ],
+    localPatterns: [
+      {
+        pathname: "/api/media/file/**",
+      },
+    ],
   },
 };
 

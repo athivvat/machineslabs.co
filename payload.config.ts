@@ -54,7 +54,9 @@ export default buildConfig({
     s3Storage({
       enabled: useR2,
       collections: {
-        media: true,
+        media: {
+          prefix: 'articles/assets',
+        },
       },
       bucket: process.env.S3_BUCKET || '',
       config: {
@@ -65,6 +67,7 @@ export default buildConfig({
         // Cloudflare R2 always uses the "auto" region.
         region: 'auto',
         endpoint: process.env.S3_ENDPOINT || '',
+        forcePathStyle: true,
       },
     }),
   ],
