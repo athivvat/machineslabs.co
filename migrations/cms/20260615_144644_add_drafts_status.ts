@@ -119,7 +119,6 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "_projects_v_rels_tags_id_idx" ON "cms"."_projects_v_rels" USING btree ("tags_id");
   CREATE INDEX "posts__status_idx" ON "cms"."posts" USING btree ("_status");
   CREATE INDEX "projects__status_idx" ON "cms"."projects" USING btree ("_status");
-  ALTER TABLE "cms"."media" DROP COLUMN IF EXISTS "prefix";
   UPDATE "cms"."posts" SET "_status" = 'published';
   UPDATE "cms"."projects" SET "_status" = 'published';`)
 }
