@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { draftMode } from "next/headers";
 import { ArrowLeftIcon, CpuIcon, ExternalLinkIcon } from "lucide-react";
 
 import CategoryBadge from "@/components/category-badge";
@@ -26,7 +27,8 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const project = await getProjectBySlug(slug);
+  const draft = await draftMode();
+  const project = await getProjectBySlug(slug, { draft: draft.isEnabled });
   if (!project) return {};
 
   const description = project.excerpt ?? project.subTitle ?? undefined;
@@ -73,7 +75,8 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 
 export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   const { slug } = await params;
-  const project = await getProjectBySlug(slug);
+  const draft = await draftMode();
+  const project = await getProjectBySlug(slug, { draft: draft.isEnabled });
   if (!project) notFound();
 
   const image = project.featureImage?.image;

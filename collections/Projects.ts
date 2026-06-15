@@ -44,6 +44,27 @@ export const Projects: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'subTitle', 'updatedAt'],
+    preview: (doc) => {
+      if (doc?.slug) {
+        return `/api/preview?collection=projects&slug=${doc.slug}`
+      }
+      return null
+    },
+  },
+  access: {
+    read: ({ req }) => {
+      if (req.user) return true
+      return {
+        _status: {
+          equals: 'published',
+        },
+      }
+    },
+  },
+  versions: {
+    drafts: {
+      schedulePublish: true,
+    },
   },
   hooks: {
     afterChange: [revalidateProject],
@@ -67,6 +88,16 @@ export const Projects: CollectionConfig = {
       },
       hooks: {
         beforeValidate: [ensureSlug],
+      },
+    },
+    {
+      name: 'publishedAt',
+      type: 'date',
+      admin: {
+        position: 'sidebar',
+        date: {
+          pickerAppearance: 'dayAndTime',
+        },
       },
     },
     {

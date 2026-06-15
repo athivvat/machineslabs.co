@@ -4,6 +4,7 @@ import "../globals.css";
 import { cn } from "@/lib/utils";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import PreviewBanner from "@/components/preview-banner";
 import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
@@ -57,6 +58,7 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col">
+        <PreviewBanner />
         <Header />
         <main className="flex-1 pt-16">{children}</main>
         <Footer />

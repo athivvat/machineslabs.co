@@ -9,19 +9,33 @@ export async function getProjects({ limit }: { limit?: number } = {}): Promise<P
   const { docs } = await payload.find({
     collection: "projects",
     depth: 1,
-    sort: "-createdAt",
+    sort: "-publishedAt",
+    where: {
+      _status: {
+        equals: "published",
+      },
+    },
     ...(limit ? { limit } : { pagination: false }),
   });
   return docs;
 }
 
-export async function getProjectBySlug(slug: string): Promise<Project | null> {
+export async function getProjectBySlug(
+  slug: string,
+  { draft = false }: { draft?: boolean } = {},
+): Promise<Project | null> {
   const payload = await getPayload({ config });
   const { docs } = await payload.find({
     collection: "projects",
     depth: 2,
     limit: 1,
-    where: { slug: { equals: slug } },
+    draft,
+    where: {
+      and: [
+        { slug: { equals: slug } },
+        ...(draft ? [] : [{ _status: { equals: "published" } }]),
+      ],
+    },
   });
   return docs[0] ?? null;
 }

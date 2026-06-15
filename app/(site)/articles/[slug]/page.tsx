@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { draftMode } from "next/headers";
 
 import CategoryBadge from "@/components/category-badge";
 import RichTextBody from "@/components/rich-text";
@@ -21,7 +22,8 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const draft = await draftMode();
+  const post = await getPostBySlug(slug, { draft: draft.isEnabled });
   if (!post) return {};
 
   const description = post.excerpt ?? post.subTitle ?? undefined;
@@ -68,7 +70,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
 export default async function ArticlePage({ params }: Params) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const draft = await draftMode();
+  const post = await getPostBySlug(slug, { draft: draft.isEnabled });
   if (!post) notFound();
 
   const image = post.featureImage?.image;
