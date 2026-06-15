@@ -374,8 +374,14 @@ export default async function CourseDetailPage({ params }: CoursePageProps) {
             <div className="border border-white/10 rounded-2xl p-6 bg-white/[0.01]">
               <h3 className="font-bold text-white text-lg mb-4">ผู้จัดสอน</h3>
               <div className="flex items-center gap-3">
-                <div className="h-12 w-12 rounded-full bg-blaze-orange flex items-center justify-center font-bold text-lg text-white font-mono">
-                  ML
+                <div className="h-12 w-12 rounded-full overflow-hidden shrink-0 bg-blaze-orange">
+                  <Image
+                    src="/images/machines-labs-logo.svg"
+                    alt="Machines Labs Team"
+                    width={48}
+                    height={48}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
                 <div>
                   <h4 className="font-bold text-white text-sm">Machines Labs Team</h4>

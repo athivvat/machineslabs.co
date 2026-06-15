@@ -6,6 +6,16 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { toast } from "sonner"
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import {
   ArrowLeft,
   Save,
   Plus,
@@ -96,6 +106,8 @@ interface EditCourseClientProps {
 export function EditCourseClient({ course }: EditCourseClientProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const [moduleToDelete, setModuleToDelete] = useState<{ id: string; title: string } | null>(null)
+  const [lectureToDelete, setLectureToDelete] = useState<{ id: string; title: string } | null>(null)
 
   const orderedLessons = course.modules.flatMap((mod) =>
     course.lessons.filter((l) => l.moduleId === mod.id)
@@ -357,20 +369,7 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
   }
 
   const handleDeleteModule = (moduleId: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete module "${title}"? This will delete all lectures inside this module.`)) {
-      return
-    }
-
-    startTransition(async () => {
-      try {
-        await deleteModule(moduleId, course.id)
-        toast.success("Module deleted successfully!")
-        router.refresh()
-      } catch (err) {
-        const error = err as Error
-        toast.error(error.message || "Failed to delete module")
-      }
-    })
+    setModuleToDelete({ id: moduleId, title })
   }
 
   // Lesson CRUD
@@ -458,18 +457,7 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
   }
 
   const handleDeleteLesson = (lessonId: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete lecture "${title}"?`)) return
-
-    startTransition(async () => {
-      try {
-        await deleteLesson(lessonId, course.id)
-        toast.success("Lecture deleted successfully!")
-        router.refresh()
-      } catch (err) {
-        const error = err as Error
-        toast.error(error.message || "Failed to delete lecture")
-      }
-    })
+    setLectureToDelete({ id: lessonId, title })
   }
 
   return (
@@ -1305,6 +1293,79 @@ export function EditCourseClient({ course }: EditCourseClientProps) {
           </form>
         </SheetContent>
       </Sheet>
+
+      <AlertDialog open={!!moduleToDelete} onOpenChange={(open) => !open && setModuleToDelete(null)}>
+        <AlertDialogContent className="bg-zinc-950 border-white/5 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription className="text-zinc-400">
+              This action cannot be undone. This will permanently delete module{" "}
+              <span className="font-semibold text-white">"{moduleToDelete?.title}"</span> and all lectures inside this module.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-transparent border-white/10 hover:bg-white/5 hover:text-white text-zinc-400">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-rose-600 hover:bg-rose-700 text-white"
+              onClick={() => {
+                if (moduleToDelete) {
+                  const { id } = moduleToDelete
+                  setModuleToDelete(null)
+                  startTransition(async () => {
+                    try {
+                      await deleteModule(id, course.id)
+                      toast.success("Module deleted successfully!")
+                      router.refresh()
+                    } catch (err) {
+                      const error = err as Error
+                      toast.error(error.message || "Failed to delete module")
+                    }
+                  })
+                }
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!lectureToDelete} onOpenChange={(open) => !open && setLectureToDelete(null)}>
+        <AlertDialogContent className="bg-zinc-950 border-white/5 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription className="text-zinc-400">
+              This action cannot be undone. This will permanently delete lecture{" "}
+              <span className="font-semibold text-white">"{lectureToDelete?.title}"</span>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-transparent border-white/10 hover:bg-white/5 hover:text-white text-zinc-400">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-rose-600 hover:bg-rose-700 text-white"
+              onClick={() => {
+                if (lectureToDelete) {
+                  const { id } = lectureToDelete
+                  setLectureToDelete(null)
+                  startTransition(async () => {
+                    try {
+                      await deleteLesson(id, course.id)
+                      toast.success("Lecture deleted successfully!")
+                      router.refresh()
+                    } catch (err) {
+                      const error = err as Error
+                      toast.error(error.message || "Failed to delete lecture")
+                    }
+                  })
+                }
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
     </div>
   )
 }

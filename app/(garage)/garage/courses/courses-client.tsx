@@ -5,6 +5,16 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Plus,
   Search,
   Trash2,
@@ -84,6 +94,7 @@ export function CoursesClient({ initialCourses }: CoursesClientProps) {
   const [platformFilter, setPlatformFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [isPending, startTransition] = useTransition();
+  const [courseToDelete, setCourseToDelete] = useState<{ id: string; title: string } | null>(null);
 
   // Sheet states
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -233,18 +244,7 @@ export function CoursesClient({ initialCourses }: CoursesClientProps) {
   };
 
   const handleDeleteCourse = (id: string, title: string) => {
-    if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
-
-    startTransition(async () => {
-      try {
-        await deleteCourse(id);
-        toast.success("Course deleted successfully!");
-        router.refresh();
-      } catch (err) {
-        const error = err as Error;
-        toast.error(error.message || "Failed to delete course");
-      }
-    });
+    setCourseToDelete({ id, title });
   };
 
   const handleCreateSubmit = (e: React.FormEvent) => {
@@ -1012,6 +1012,41 @@ export function CoursesClient({ initialCourses }: CoursesClientProps) {
         </SheetContent>
       </Sheet>
 
+      <AlertDialog open={!!courseToDelete} onOpenChange={(open) => !open && setCourseToDelete(null)}>
+        <AlertDialogContent className="bg-zinc-950 border-white/5 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription className="text-zinc-400">
+              This action cannot be undone. This will permanently delete the course{" "}
+              <span className="font-semibold text-white">"{courseToDelete?.title}"</span> and all of its associated modules and lectures.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="bg-transparent border-white/10 hover:bg-white/5 hover:text-white text-zinc-400">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-rose-600 hover:bg-rose-700 text-white"
+              onClick={() => {
+                if (courseToDelete) {
+                  const { id } = courseToDelete;
+                  setCourseToDelete(null);
+                  startTransition(async () => {
+                    try {
+                      await deleteCourse(id);
+                      toast.success("Course deleted successfully!");
+                      router.refresh();
+                    } catch (err) {
+                      const error = err as Error;
+                      toast.error(error.message || "Failed to delete course");
+                    }
+                  });
+                }
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
     </div>
   );
