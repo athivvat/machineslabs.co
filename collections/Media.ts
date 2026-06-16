@@ -1,7 +1,7 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Field } from 'payload'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -36,7 +36,7 @@ export const Media: CollectionConfig = {
               readOnly: true,
               hidden: true,
             },
-          },
+          } as Field,
         ]
       : []),
   ],
