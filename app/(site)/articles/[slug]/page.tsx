@@ -119,7 +119,9 @@ export default async function ArticlePage({ params }: Params) {
             <figcaption className="mt-2 text-xs text-muted-foreground">
               {caption}
               {caption && credits ? " · " : ""}
-              {credits}
+              {credits ? (
+                <span dangerouslySetInnerHTML={{ __html: credits }} />
+              ) : null}
             </figcaption>
           )}
         </figure>

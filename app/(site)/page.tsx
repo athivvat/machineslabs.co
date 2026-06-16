@@ -9,7 +9,7 @@ export const revalidate = 60;
 
 export default async function Home() {
   const [posts, courses] = await Promise.all([
-    getPosts({ limit: 3 }),
+    getPosts({ limit: 8 }),
     getCourses()
   ]);
 
@@ -30,11 +30,21 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
-              <PostCard key={post.id} post={post} />
+          {/* Top Row: Latest 2 Articles (2-column layout) */}
+          <div className="mt-10 grid gap-8 sm:grid-cols-2">
+            {posts.slice(0, 2).map((post) => (
+              <PostCard key={post.id} post={post} compact={false} />
             ))}
           </div>
+
+          {/* Bottom Grid: Next 6 Articles (3-column layout) */}
+          {posts.length > 2 && (
+            <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {posts.slice(2, 8).map((post) => (
+                <PostCard key={post.id} post={post} compact={true} />
+              ))}
+            </div>
+          )}
         </section>
       )}
 

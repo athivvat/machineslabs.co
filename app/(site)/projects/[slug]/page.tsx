@@ -158,7 +158,9 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               <figcaption className="mt-2 text-xs text-gray-500">
                 {caption}
                 {caption && credits ? " · " : ""}
-                {credits}
+                {credits ? (
+                  <span dangerouslySetInnerHTML={{ __html: credits }} />
+                ) : null}
               </figcaption>
             )}
           </figure>
