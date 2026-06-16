@@ -5,6 +5,8 @@ import type { CollectionConfig } from 'payload'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
+const useR2 = process.env.NODE_ENV === 'production' || process.env.USE_R2 === 'true'
+
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
@@ -23,5 +25,19 @@ export const Media: CollectionConfig = {
       name: 'alt',
       type: 'text',
     },
+    // When S3 plugin is disabled (local dev), manually define the `prefix` field 
+    // to match production database schema and prevent Drizzle from dropping it.
+    ...(!useR2
+      ? [
+          {
+            name: 'prefix',
+            type: 'text',
+            admin: {
+              readOnly: true,
+              hidden: true,
+            },
+          },
+        ]
+      : []),
   ],
 }
