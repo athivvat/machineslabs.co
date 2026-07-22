@@ -20,6 +20,21 @@ export const Media: CollectionConfig = {
     // Ignored when the S3/R2 adapter is enabled.
     staticDir: path.resolve(dirname, '../media'),
   },
+  hooks: {
+    afterRead: [
+      ({ doc }) => {
+        if (useR2 && doc?.url && process.env.NEXT_PUBLIC_R2_PUBLIC_URL) {
+          const publicBase = process.env.NEXT_PUBLIC_R2_PUBLIC_URL.replace(/\/$/, '')
+          if (typeof doc.url === 'string' && doc.url.includes('.r2.cloudflarestorage.com')) {
+            // Strip scheme, host, and bucket name from the URL path
+            const urlPath = doc.url.replace(/^https?:\/\/[^\/]+\/[^\/]+\//, '')
+            doc.url = `${publicBase}/${urlPath}`
+          }
+        }
+        return doc
+      },
+    ],
+  },
   fields: [
     {
       name: 'alt',
