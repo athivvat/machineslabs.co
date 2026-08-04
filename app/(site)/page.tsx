@@ -2,6 +2,7 @@ import Link from "next/link";
 import Hero from "@/components/hero";
 import PostCard from "@/components/post-card";
 import CourseCard from "@/components/course-card";
+import VideoCollection from "@/components/video-collection";
 import { getPosts } from "@/lib/posts";
 import { getCourses } from "@/lib/courses";
 
@@ -47,6 +48,9 @@ export default async function Home() {
           )}
         </section>
       )}
+
+      {/* Video Collection Section */}
+      <VideoCollection />
 
            {/* Featured Courses Section - Full White Background */}
       {courses.length > 0 && (
