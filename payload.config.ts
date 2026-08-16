@@ -56,6 +56,13 @@ export default buildConfig({
       collections: {
         media: {
           prefix: 'articles/assets',
+          generateFileURL: ({ filename, prefix }) => {
+            const publicBase = process.env.NEXT_PUBLIC_R2_PUBLIC_URL?.replace(/\/$/, '')
+            if (publicBase) {
+              return `${publicBase}/${prefix ? `${prefix}/` : ''}${filename}`
+            }
+            return `/api/media/file/${filename}`
+          },
         },
       },
       bucket: process.env.S3_BUCKET || '',
