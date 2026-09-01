@@ -86,7 +86,7 @@ const socials: Social[] = [
 
 export default function Footer() {
   return (
-    <footer className="mt-12 py-6">
+    <footer className="py-10 bg-black">
       <div className="max-w-6xl mx-auto px-6 flex flex-col items-center gap-4">
         <div className="flex items-center justify-center gap-5">
           {socials.map(({ name, href, Icon }) => (
